@@ -1,0 +1,64 @@
+{
+    "name": "cloudisle/laravel-prometheus",
+    "description": "A Laravel package for Prometheus integration.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Brett Brist",
+            "email": "brettbrist@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "illuminate/support": ">=9.0",
+        "promphp/prometheus_client_php": "^2.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "CloudIsle\\Prometheus\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CloudIsle\\Prometheus\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CloudIsle\\Prometheus\\PrometheusServiceProvider"
+            ],
+            "aliases": {
+                "Metrics": "CloudIsle\\Prometheus\\Facades\\Metrics"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^10.3",
+        "predis/predis": "^2.2"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "test": [
+            "@clear",
+            "@php vendor/bin/phpunit"
+        ]
+    }
+}

@@ -1,0 +1,32 @@
+name: Publish Package on Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  test-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, json, tokenizer, bcmath, pdo, pdo_mysql, redis
+          coverage: none
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
+      - name: Get version from release tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      - name: Trigger Packagist update
+        uses: andreskrey/packagist-update@v2
+        with:
+          package: ${{ secrets.PACKAGIST_PACKAGE_NAME }}
+          username: ${{ secrets.PACKAGIST_USERNAME }}
+          token: ${{ secrets.PACKAGIST_TOKEN }}
+      - name: Notify success
+        run: echo "Release $VERSION created, tests passed, and Packagist update triggered."

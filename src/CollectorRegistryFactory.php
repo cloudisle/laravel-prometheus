@@ -33,7 +33,7 @@ class CollectorRegistryFactory
      */
     protected static function createRedisCollectorRegistry(): CollectorRegistry
     {
-        $conn = Redis::connection(config('prometheus.redis.connection'));
+        $conn = Redis::connection(config('prometheus.storage.redis.connection'));
         $adapter = RedisAdapter::fromExistingConnection($conn->client());
 
         return new CollectorRegistry($adapter);
@@ -42,8 +42,8 @@ class CollectorRegistryFactory
 
     protected static function createDatabaseCollectorRegistry(): CollectorRegistry
     {
-        $db = DB::connection(config('prometheus.database.connection'));
-        $adapter = new PDOAdapter($db->getPdo(), config('prometheus.database.prefix'));
+        $db = DB::connection(config('prometheus.storage.database.connection'));
+        $adapter = new PDOAdapter($db->getPdo(), config('prometheus.storage.database.prefix'));
 
         return new CollectorRegistry($adapter);
     }
@@ -56,13 +56,13 @@ class CollectorRegistryFactory
     protected static function createPdoCollectorRegistry(): CollectorRegistry
     {
         $db = new PDO(
-            config('prometheus.pdo.dsn'),
-            config('prometheus.pdo.username'),
-            config('prometheus.pdo.password'),
-            config('prometheus.pdo.options')
+            config('prometheus.storage.pdo.dsn'),
+            config('prometheus.storage.pdo.username'),
+            config('prometheus.storage.pdo.password'),
+            config('prometheus.storage.pdo.options')
         );
 
-        return new CollectorRegistry(new PDOAdapter($db, config('prometheus.pdo.prefix')));
+        return new CollectorRegistry(new PDOAdapter($db, config('prometheus.storage.pdo.prefix')));
     }
 
 }

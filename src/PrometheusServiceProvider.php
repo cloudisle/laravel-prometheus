@@ -56,7 +56,7 @@ class PrometheusServiceProvider extends ServiceProvider
      */
     protected function createCollectorRegistry(): CollectorRegistry
     {
-        $driver = config('prometheus.driver');
+        $driver = config('prometheus.storage.driver');
 
         return CollectorRegistryFactory::create($driver);
     }

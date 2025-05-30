@@ -48,8 +48,7 @@ class MetricRegistrarTest extends TestCase
         $mockRegistry->shouldReceive('registerSummary')
             ->once()
             ->with('test_ns', 'sum1', 'Sum 1', ['foo'], 123, [0.5, 0.9]);
-        $this->app->instance(CollectorRegistry::class, $mockRegistry);
-        MetricRegistrar::register();
+        MetricRegistrar::register($mockRegistry);
         $this->addToAssertionCount(Mockery::getContainer()->mockery_getExpectationCount());
     }
 

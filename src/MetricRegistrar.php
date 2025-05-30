@@ -11,12 +11,10 @@ class MetricRegistrar
     /**
      * @throws MetricsRegistrationException
      */
-    public static function register(): void
+    public static function register(CollectorRegistry $registry): void
     {
         $metrics = config('metrics');
         $namespace = config('metrics.namespace');
-
-        $registry = app(CollectorRegistry::class);
 
         foreach ($metrics['counters'] as $counter) {
             $registry->registerCounter($namespace, $counter['name'], $counter['help'], static::labels($counter));

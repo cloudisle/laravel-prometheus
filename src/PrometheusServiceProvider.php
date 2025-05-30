@@ -26,14 +26,14 @@ class PrometheusServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton(CollectorRegistry::class, function () {
-            $this->createCollectorRegistry();
+            $registry = $this->createCollectorRegistry();
+            MetricRegistrar::register($registry);
+            return $registry;
         });
 
-        $this->app->singleton(PrometheusService::class, PrometheusService::class);
-        $this->app->singleton(SimpleMetricsService::class, SimpleMetricsService::class);
-        $this->app->singleton(MetricEndpoint::class, MetricEndpoint::class);
-
-        $this->registerDefaultMetrics();
+        $this->app->singleton(PrometheusService::class, fn ($app) => new PrometheusService($app->make(CollectorRegistry::class)));
+        $this->app->singleton(SimpleMetricsService::class, fn ($app) => new SimpleMetricsService($app->make(PrometheusService::class)));
+        $this->app->singleton(MetricEndpoint::class, fn ($app) => new MetricEndpoint($app->make(PrometheusService::class)));
     }
 
     /**
@@ -59,14 +59,6 @@ class PrometheusServiceProvider extends ServiceProvider
         $driver = config('prometheus.driver');
 
         return CollectorRegistryFactory::create($driver);
-    }
-
-    /**
-     * @throws MetricsRegistrationException
-     */
-    protected function registerDefaultMetrics(): void
-    {
-        MetricRegistrar::register();
     }
 
 }
